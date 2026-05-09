@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom'
-import { Shield } from 'lucide-react'
+import { Shield, LogOut, User as UserIcon } from 'lucide-react'
+import { useAuth } from '../hooks/useAuth'
+import { useNavigate, Link } from 'react-router-dom'
 
 /**
  * Navbar component.
@@ -7,8 +8,13 @@ import { Shield } from 'lucide-react'
  * It always shows the "Login" link and never shows "Logout" or the User info.
  */
 function Navbar() {
-  // Γ¥î BUG 4: useAuth() hook is not called here
-  // const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
 
   return (
     <nav className="bg-white border-b border-slate-200 px-6 py-4">
@@ -24,13 +30,28 @@ function Navbar() {
           
           <div className="h-6 w-px bg-slate-200 mx-2"></div>
           
-          {/* Γ¥î BUG 4: Hardcoded Login link, no Logout option */}
-          <Link 
-            to="/login" 
-            className="bg-brand-50 text-brand-600 px-4 py-2 rounded-lg hover:bg-brand-100 transition-all font-semibold"
-          >
-            Login
-          </Link>
+          {isAuthenticated ? (
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 text-slate-700 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+                <UserIcon className="w-4 h-4 text-slate-500" />
+                <span className="font-medium">{user?.name}</span>
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="flex items-center space-x-1.5 text-slate-600 hover:text-red-600 transition-colors px-3 py-1.5"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </button>
+            </div>
+          ) : (
+            <Link 
+              to="/login" 
+              className="bg-brand-50 text-brand-600 px-4 py-2 rounded-lg hover:bg-brand-100 transition-all font-semibold"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </nav>

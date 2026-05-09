@@ -19,3 +19,25 @@ In `src/context/AuthContext.jsx`, the `login` function updates React state (`set
 
 ### Bug 4: Navbar Does Not Respond
 In `src/components/Navbar.jsx`, the component entirely ignores the auth state. It does not call the `useAuth()` hook, and the "Login" link is hardcoded instead of conditionally rendering a "Logout" button and greeting.
+
+## Fixes Applied
+
+### 1. Context Wiring (Bug 1)
+Uncommented the `AuthProvider` import in `src/main.jsx` and wrapped the `<App />` component within `<BrowserRouter>` and `<AuthProvider>`. This ensures the entire application can consume the auth context.
+
+### 2. Session Persistence (Bug 3)
+Refactored `src/context/AuthContext.jsx` to:
+- Sync `user` and `token` to `localStorage` during the `login()` process.
+- Clear `localStorage` during the `logout()` process.
+- Implement a `useEffect` hook that runs once on mount to restore the user session if valid tokens are found in `localStorage`.
+
+### 3. Protected Routes (Bug 2)
+- Created a new `src/components/ProtectedRoute.jsx` component that checks the `isAuthenticated` state from `useAuth()`. It uses the `Navigate` component from `react-router-dom` to redirect unauthenticated users to `/login`.
+- Updated `src/App.jsx` to wrap all private routes (`/dashboard`, `/settings`, `/profile`) with the `<ProtectedRoute>` component.
+
+### 4. Auth-Aware UI (Bug 4)
+Refactored `src/components/Navbar.jsx` to consume the `useAuth()` hook. The navbar now conditionally renders:
+- The user's name and a "Logout" button when the user is logged in.
+- A "Login" link when the user is logged out.
+- Instant UI updates upon login/logout state changes.
+

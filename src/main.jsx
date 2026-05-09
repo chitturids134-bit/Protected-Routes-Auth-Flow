@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import './index.css'
-// import { AuthProvider } from './context/AuthContext' // BUG 1: AuthProvider import exists but is not used
+import { AuthProvider } from './context/AuthContext'
 
 /**
  * Main application entry point.
@@ -12,8 +12,9 @@ import './index.css'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      {/* Γ¥î BUG 1: AuthProvider should wrap <App /> but it is missing */}
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,
 )

@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react'
+import { createContext, useState, useEffect } from 'react'
 
 export const AuthContext = createContext(null)
 
@@ -14,22 +14,28 @@ export const AuthProvider = ({ children }) => {
   const login = (userData, fakeToken) => {
     setUser(userData)
     setToken(fakeToken)
-    
-    // Γ¥î Missing: localStorage.setItem('authToken', fakeToken)
-    // Γ¥î Missing: localStorage.setItem('authUser', JSON.stringify(userData))
-    console.log('Γ£à User logged in:', userData.email)
+    localStorage.setItem('authToken', fakeToken)
+    localStorage.setItem('authUser', JSON.stringify(userData))
+    console.log('✅ User logged in:', userData.email)
   }
 
   // BUG 3 (Part 2): Logout clears state but may leave data in storage or has issues
   const logout = () => {
     setUser(null)
     setToken(null)
-    // Γ¥î Missing: localStorage.removeItem('authToken')
-    // Γ¥î Missing: localStorage.removeItem('authUser')
-    console.log('≡ƒÜ¬ User logged out')
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('authUser')
+    console.log('🚪 User logged out')
   }
 
-  // BUG 2 (Part 2): Missing useEffect to load user from localStorage on mount
+  useEffect(() => {
+    const storedToken = localStorage.getItem('authToken')
+    const storedUser = localStorage.getItem('authUser')
+    if (storedToken && storedUser) {
+      setToken(storedToken)
+      setUser(JSON.parse(storedUser))
+    }
+  }, [])
 
   const value = {
     user,
